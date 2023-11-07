@@ -160,6 +160,7 @@ Partial Class EmployeeInfoForm
         EmployeeIDAutofill.Name = "EmployeeIDAutofill"
         EmployeeIDAutofill.Size = New Size(0, 15)
         EmployeeIDAutofill.TabIndex = 11
+        EmployeeIDAutofill.Text = 1000
         ' 
         ' Male
         ' 

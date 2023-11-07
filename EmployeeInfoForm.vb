@@ -1,7 +1,9 @@
 ﻿Imports System.Data.Common
 Imports System.Data.SqlClient
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.Window
-Imports EmployeeManagementAppForWin.PublicFunction
+Imports PublicFunction = EmployeeManagementAppForWin.PublicFunction
+Imports PublicDbSetting = EmployeeManagementAppForWin.PublicDbSetting
+Imports EmployeeManagementAppForWin.ConstructorEmployeeDetail
 
 Public Class EmployeeInfoForm
     ' convert flag to str or str to flag
@@ -59,7 +61,7 @@ Public Class EmployeeInfoForm
         Return ConvertGenderToFlag(GenderText)
     End Function
     Private Function ReturnBelongingToText() As Integer
-        Dim BelongingToText As Integer = ConvertBelongingToToFlag(BelongingToSelectBox.Text)
+        Dim BelongingToText As Integer = PublicFunction.ConvertBelongingToToFlag(BelongingToSelectBox.Text)
         BelongingToSelectBox.Text = "事業部"
         Return BelongingToText
     End Function
@@ -74,9 +76,7 @@ Public Class EmployeeInfoForm
     End Function
 
     ' db connection and sqlstrings
-    Dim LocalDbConn As New SqlConnection("Server=(localdb)\MSSQLLocalDB;" &
-                                        "Initial Catalog=C:\USERS\HOUSE\SOURCE\REPOS\EMPLOYEEMANAGEMENTAPPFORWIN\EMPLOYEEINFO.MDF;" &
-                                        "Integrated Security=True;")
+    Dim LocalDbConn = PublicDbSetting.LocalDbConn
 
     Private Sub AddShownEmployeeInfoItems(ByVal SqlReadObject As Object)
         ShowEmployeeInfo.Items.AddRange(New ListViewItem() {
@@ -94,13 +94,6 @@ Public Class EmployeeInfoForm
         Return SqlDBLatestRowRead
     End Function
 
-    ' close DB
-    Private Sub CloseDBConnection(LocalDbConn)
-        If (LocalDbConn.State = ConnectionState.Open) Then
-            LocalDbConn.Close()
-        End If
-    End Sub
-
     Private Sub ShownEmployeeInfoForm() Handles Me.Shown
         Try
             Dim SqlSelectStr As String = "SELECT * FROM dbo.EmployeeInfo;"
@@ -112,9 +105,9 @@ Public Class EmployeeInfoForm
             End While
             SqlSelectRead.Close()
         Catch ex As Exception
-            ShowErrorMessageBox(ex.Message)
+            PublicFunction.ShowErrorMessageBox(ex.Message)
         Finally
-            CloseDBConnection(LocalDbConn)
+            PublicDbSetting.CloseDBConnection(LocalDbConn)
         End Try
         Try
             LocalDbConn.Open()
@@ -123,16 +116,24 @@ Public Class EmployeeInfoForm
             EmployeeIDAutofill.Text = SqlEmployeeIDAutofillRead(0) + 1
             SqlEmployeeIDAutofillRead.Close()
         Catch ex As Exception
-            ShowErrorMessageBox(ex.Message)
+            PublicFunction.ShowErrorMessageBox(ex.Message)
         Finally
-            CloseDBConnection(LocalDbConn)
+            PublicDbSetting.CloseDBConnection(LocalDbConn)
         End Try
     End Sub
 
     Private Sub PostEmployeeInfo_Click(sender As Object, e As EventArgs) Handles PostEmployeeInfo.Click
         Dim EmployeeNameText As String = ReturnEmployeeNameText()
+        If Not PublicFunction.CheckInputText(EmployeeNameText) Then
+            MessageBox.Show("従業員名を入力してください", "登録失敗")
+            Return
+        End If
         Dim GenderText As Integer = ReturnGenderText()
         Dim BelongingToText As Integer = ReturnBelongingToText()
+        If BelongingToText = -1 Then
+            MessageBox.Show("選択肢から所属を選んでください", "登録失敗")
+            Return
+        End If
         Dim EmployeeIDText As Integer = ReturnEmployeeIDText()
         Dim SqlInsertStr As String = $"INSERT INTO dbo.EmployeeInfo(EmployeeID, EmployeeName, GenderFlag, BelongingToFlag) VALUES({EmployeeIDText}, N'{EmployeeNameText}', {GenderText}, {BelongingToText});"
         Try
@@ -141,19 +142,19 @@ Public Class EmployeeInfoForm
             DbTransaction = LocalDbConn.BeginTransaction()
             Try
                 Dim SqlInsertDb As New SqlCommand(SqlInsertStr, LocalDbConn, DbTransaction)
-                Dim SqlInsertRead As Object = SqlInsertDb.ExecuteNonQuery()
+                SqlInsertDb.ExecuteNonQuery()
                 DbTransaction.Commit()
                 Dim SqlEmployeeLatestRowRead = ReturnDBLatestRow(LocalDbConn)
                 SqlEmployeeLatestRowRead.Read()
                 AddShownEmployeeInfoItems(SqlEmployeeLatestRowRead)
             Catch ex As Exception
-                ShowErrorMessageBox(ex.Message)
+                PublicFunction.ShowErrorMessageBox(ex.Message)
                 DbTransaction.Rollback()
             End Try
         Catch ex As Exception
-            ShowErrorMessageBox(ex.Message)
+            PublicFunction.ShowErrorMessageBox(ex.Message)
         Finally
-            CloseDBConnection(LocalDbConn)
+            PublicDbSetting.CloseDBConnection(LocalDbConn)
         End Try
     End Sub
 
@@ -171,15 +172,20 @@ Public Class EmployeeInfoForm
             End While
             SqlSearchRead.Close()
         Catch ex As Exception
-            ShowErrorMessageBox(ex.Message)
+            PublicFunction.ShowErrorMessageBox(ex.Message)
         Finally
-            CloseDBConnection(LocalDbConn)
+            PublicDbSetting.CloseDBConnection(LocalDbConn)
         End Try
     End Sub
 
     Private Sub ShowEmployeeInfo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ShowEmployeeInfo.SelectedIndexChanged
         Dim SelectedItemShowEmployeeInfo As ListViewItem = ShowEmployeeInfo.SelectedItems(0)
-        Debug.Write(SelectedItemShowEmployeeInfo)
+        Dim ConstructorEmployeeDetail As New ConstructorEmployeeDetail()
+        ConstructorEmployeeDetail.EmployeeID = SelectedItemShowEmployeeInfo.Text
+        ConstructorEmployeeDetail.EmployeeName = SelectedItemShowEmployeeInfo.SubItems(1).Text
+        ConstructorEmployeeDetail.EmployeeGender = SelectedItemShowEmployeeInfo.SubItems(2).Text
+        ConstructorEmployeeDetail.EmployeeBelongingTo = SelectedItemShowEmployeeInfo.SubItems(3).Text
+        SetConstructorEmployeeDetail = ConstructorEmployeeDetail
         EmployeeDetailFrom.Show()
     End Sub
 End Class
