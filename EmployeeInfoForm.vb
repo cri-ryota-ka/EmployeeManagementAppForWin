@@ -7,7 +7,7 @@ Imports EmployeeManagementAppForWin.ConstructorEmployeeDetail
 
 Public Class EmployeeInfoForm
     ' convert flag to str or str to flag
-    Private Function ConvertFlagToGender(ByVal GenderFlag As Integer) As String
+    Public Shared Function ConvertFlagToGender(ByVal GenderFlag As Integer) As String
         Dim GenderString As String
         If GenderFlag = 0 Then
             GenderString = "男性"
@@ -18,7 +18,7 @@ Public Class EmployeeInfoForm
         End If
         Return GenderString
     End Function
-    Private Function ConvertFlagToBelongingTo(ByVal BelongingToFlag As Integer) As String
+    Public Shared Function ConvertFlagToBelongingTo(ByVal BelongingToFlag As Integer) As String
         Dim BelongingToString As String
         If BelongingToFlag = 0 Then
             BelongingToString = "営業部"
@@ -76,10 +76,10 @@ Public Class EmployeeInfoForm
     End Function
 
     ' db connection and sqlstrings
-    Dim LocalDbConn = PublicDbSetting.LocalDbConn
+    Public Shared LocalDbConn = PublicDbSetting.LocalDbConn
 
-    Private Sub AddShownEmployeeInfoItems(ByVal SqlReadObject As Object)
-        ShowEmployeeInfo.Items.AddRange(New ListViewItem() {
+    Public Shared Sub AddShownEmployeeInfoItems(ByVal SqlReadObject As Object, ListView As ListView)
+        ListView.Items.AddRange(New ListViewItem() {
             New ListViewItem(New String() {$"{SqlReadObject(0)}",
                                             $"{SqlReadObject(1)}",
                                             $"{ConvertFlagToGender(SqlReadObject(2))}",
@@ -87,21 +87,21 @@ Public Class EmployeeInfoForm
             }
         )
     End Sub
-    Private Function ReturnDBLatestRow(LocalDbConn)
+    Public Shared Function ReturnDBLatestRow(LocalDbConn)
         Dim SqlDBLatestRowStr As String = "SELECT TOP(1)* FROM dbo.EmployeeInfo ORDER BY EmployeeID DESC;"
         Dim SqlDBLatestRowDB As New SqlCommand(SqlDBLatestRowStr, LocalDbConn)
         Dim SqlDBLatestRowRead = SqlDBLatestRowDB.ExecuteReader()
         Return SqlDBLatestRowRead
     End Function
 
-    Private Sub ShownEmployeeInfoForm() Handles Me.Shown
+    Public Shared Sub SubShowEmployeeInfo(ListView As ListView)
         Try
             Dim SqlSelectStr As String = "SELECT * FROM dbo.EmployeeInfo;"
             Dim SqlCommandDb As New SqlCommand(SqlSelectStr, LocalDbConn)
             LocalDbConn.Open()
             Dim SqlSelectRead = SqlCommandDb.ExecuteReader()
             While SqlSelectRead.Read()
-                AddShownEmployeeInfoItems(SqlSelectRead)
+                AddShownEmployeeInfoItems(SqlSelectRead, ListView)
             End While
             SqlSelectRead.Close()
         Catch ex As Exception
@@ -109,17 +109,25 @@ Public Class EmployeeInfoForm
         Finally
             PublicDbSetting.CloseDBConnection(LocalDbConn)
         End Try
+    End Sub
+
+    Public Shared Sub SubEmployeeIDAutofill(Label As Label)
         Try
             LocalDbConn.Open()
             Dim SqlEmployeeIDAutofillRead = ReturnDBLatestRow(LocalDbConn)
             SqlEmployeeIDAutofillRead.Read()
-            EmployeeIDAutofill.Text = SqlEmployeeIDAutofillRead(0) + 1
+            Label.Text = SqlEmployeeIDAutofillRead(0) + 1
             SqlEmployeeIDAutofillRead.Close()
         Catch ex As Exception
             PublicFunction.ShowErrorMessageBox(ex.Message)
         Finally
             PublicDbSetting.CloseDBConnection(LocalDbConn)
         End Try
+    End Sub
+
+    Private Sub ShownEmployeeInfoForm() Handles Me.Shown
+        SubShowEmployeeInfo(ShowEmployeeInfo)
+        SubEmployeeIDAutofill(EmployeeIDAutofill)
     End Sub
 
     Private Sub PostEmployeeInfo_Click(sender As Object, e As EventArgs) Handles PostEmployeeInfo.Click
@@ -146,7 +154,7 @@ Public Class EmployeeInfoForm
                 DbTransaction.Commit()
                 Dim SqlEmployeeLatestRowRead = ReturnDBLatestRow(LocalDbConn)
                 SqlEmployeeLatestRowRead.Read()
-                AddShownEmployeeInfoItems(SqlEmployeeLatestRowRead)
+                AddShownEmployeeInfoItems(SqlEmployeeLatestRowRead, ShowEmployeeInfo)
             Catch ex As Exception
                 PublicFunction.ShowErrorMessageBox(ex.Message)
                 DbTransaction.Rollback()
@@ -168,7 +176,7 @@ Public Class EmployeeInfoForm
             ShowEmployeeInfo.Clear()
             ShowEmployeeInfo.Columns.AddRange(New ColumnHeader() {EmployeeIDColumn, EmployeeNameColumn, GenderColumn, BelongingToColumn})
             While SqlSearchRead.Read()
-                AddShownEmployeeInfoItems(SqlSearchRead)
+                AddShownEmployeeInfoItems(SqlSearchRead, ShowEmployeeInfo)
             End While
             SqlSearchRead.Close()
         Catch ex As Exception
@@ -187,5 +195,11 @@ Public Class EmployeeInfoForm
         ConstructorEmployeeDetail.EmployeeBelongingTo = SelectedItemShowEmployeeInfo.SubItems(3).Text
         SetConstructorEmployeeDetail = ConstructorEmployeeDetail
         EmployeeDetailFrom.Show()
+    End Sub
+
+    ' 一時対応、画面を差し替えたら処理は削除する
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles MoveNisWindowFrom.Click
+        NisWindowForm.Show()
+        Me.Close()
     End Sub
 End Class

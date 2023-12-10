@@ -42,6 +42,7 @@ Partial Class EmployeeInfoForm
         Female = New RadioButton()
         EmployeeNameTextBox = New TextBox()
         BelongingToSelectBox = New ComboBox()
+        MoveNisWindowFrom = New Button()
         SuspendLayout()
         ' 
         ' ContextMenuStrip1
@@ -52,7 +53,7 @@ Partial Class EmployeeInfoForm
         ' Title
         ' 
         Title.AutoSize = True
-        Title.Font = New Font("Yu Gothic UI", 20.0F, FontStyle.Bold, GraphicsUnit.Point)
+        Title.Font = New Font("Yu Gothic UI", 20F, FontStyle.Bold, GraphicsUnit.Point)
         Title.Location = New Point(516, 22)
         Title.Name = "Title"
         Title.Size = New Size(152, 37)
@@ -158,9 +159,9 @@ Partial Class EmployeeInfoForm
         EmployeeIDAutofill.AutoSize = True
         EmployeeIDAutofill.Location = New Point(614, 196)
         EmployeeIDAutofill.Name = "EmployeeIDAutofill"
-        EmployeeIDAutofill.Size = New Size(0, 15)
+        EmployeeIDAutofill.Size = New Size(31, 15)
         EmployeeIDAutofill.TabIndex = 11
-        EmployeeIDAutofill.Text = 1000
+        EmployeeIDAutofill.Text = "1000"
         ' 
         ' Male
         ' 
@@ -204,11 +205,21 @@ Partial Class EmployeeInfoForm
         BelongingToSelectBox.TabIndex = 15
         BelongingToSelectBox.Text = "事業部"
         ' 
+        ' MoveNisWindowFrom
+        ' 
+        MoveNisWindowFrom.Location = New Point(915, 36)
+        MoveNisWindowFrom.Name = "MoveNisWindowFrom"
+        MoveNisWindowFrom.Size = New Size(117, 23)
+        MoveNisWindowFrom.TabIndex = 16
+        MoveNisWindowFrom.Text = "MoveNisWindow"
+        MoveNisWindowFrom.UseVisualStyleBackColor = True
+        ' 
         ' EmployeeInfoForm
         ' 
-        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
+        AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(1184, 681)
+        Controls.Add(MoveNisWindowFrom)
         Controls.Add(BelongingToSelectBox)
         Controls.Add(EmployeeNameTextBox)
         Controls.Add(Female)
@@ -248,4 +259,5 @@ Partial Class EmployeeInfoForm
     Friend WithEvents Male As RadioButton
     Friend WithEvents EmployeeNameTextBox As TextBox
     Friend WithEvents BelongingToSelectBox As ComboBox
+    Friend WithEvents MoveNisWindowFrom As Button
 End Class
