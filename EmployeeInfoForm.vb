@@ -29,7 +29,7 @@ Public Class EmployeeInfoForm
         End If
         Return BelongingToString
     End Function
-    Private Function ConvertGenderToFlag(ByVal GenderString As String) As Integer
+    Public Shared Function ConvertGenderToFlag(ByVal GenderString As String) As Integer
         Dim GenderFlag As Integer
         If GenderString = "男性" Then
             GenderFlag = 0
@@ -42,38 +42,25 @@ Public Class EmployeeInfoForm
     End Function
 
     ' return submit text
-    Private Function ReturnEmployeeNameText() As String
-        Dim EmployeeNameText As String = EmployeeNameTextBox.Text
-        EmployeeNameTextBox.Text = ""
-        Return EmployeeNameText
-    End Function
-    Private Function ReturnGenderText() As Integer
-        Dim GenderText As String
-        If Male.Checked Then
-            GenderText = "男性"
-        ElseIf Female.Checked Then
-            GenderText = "女性"
-            Male.Checked = True
-        Else
-            GenderText = "Error"
-            Male.Checked = True
+    Public Shared Function CheckPostEmployeeInput(EmployeeNameText As String, BelongingToText As Integer) As Boolean
+        If Not PublicFunction.CheckInputText(EmployeeNameText) Then
+            MessageBox.Show("従業員名を入力してください", "登録失敗")
+            Return False
         End If
-        Return ConvertGenderToFlag(GenderText)
+        If BelongingToText = -1 Then
+            MessageBox.Show("選択肢から所属を選んでください", "登録失敗")
+            Return False
+        End If
+        Return True
     End Function
-    Private Function ReturnBelongingToText() As Integer
-        Dim BelongingToText As Integer = PublicFunction.ConvertBelongingToToFlag(BelongingToSelectBox.Text)
-        BelongingToSelectBox.Text = "事業部"
-        Return BelongingToText
-    End Function
-    Private Function ReturnEmployeeIDText() As Integer
-        Dim EmployeeIDText As Integer = EmployeeIDAutofill.Text
-        EmployeeIDAutofill.Text += 1
-        Return EmployeeIDText
-    End Function
-    Private Function ReturnSearchNameTextStr() As String
-        Dim SearchNameText As String = SearchName.Text
-        Return SearchNameText
-    End Function
+
+    Public Shared Sub InitializePostEmployeeInput(Array() As Control)
+        Array(0).Text = ""
+        Dim RadioButton As RadioButton = Array(1)
+        RadioButton.Checked = True
+        Array(2).Text = "事業部"
+        Array(3).Text += 1
+    End Sub
 
     ' db connection and sqlstrings
     Public Shared LocalDbConn = PublicDbSetting.LocalDbConn
@@ -125,25 +112,7 @@ Public Class EmployeeInfoForm
         End Try
     End Sub
 
-    Private Sub ShownEmployeeInfoForm() Handles Me.Shown
-        SubShowEmployeeInfo(ShowEmployeeInfo)
-        SubEmployeeIDAutofill(EmployeeIDAutofill)
-    End Sub
-
-    Private Sub PostEmployeeInfo_Click(sender As Object, e As EventArgs) Handles PostEmployeeInfo.Click
-        Dim EmployeeNameText As String = ReturnEmployeeNameText()
-        If Not PublicFunction.CheckInputText(EmployeeNameText) Then
-            MessageBox.Show("従業員名を入力してください", "登録失敗")
-            Return
-        End If
-        Dim GenderText As Integer = ReturnGenderText()
-        Dim BelongingToText As Integer = ReturnBelongingToText()
-        If BelongingToText = -1 Then
-            MessageBox.Show("選択肢から所属を選んでください", "登録失敗")
-            Return
-        End If
-        Dim EmployeeIDText As Integer = ReturnEmployeeIDText()
-        Dim SqlInsertStr As String = $"INSERT INTO dbo.EmployeeInfo(EmployeeID, EmployeeName, GenderFlag, BelongingToFlag) VALUES({EmployeeIDText}, N'{EmployeeNameText}', {GenderText}, {BelongingToText});"
+    Public Shared Sub SubPostEmployeeInfo(ListView As ListView, SqlInsertStr As String, Array() As Control)
         Try
             LocalDbConn.Open()
             Dim DbTransaction As SqlTransaction
@@ -154,7 +123,8 @@ Public Class EmployeeInfoForm
                 DbTransaction.Commit()
                 Dim SqlEmployeeLatestRowRead = ReturnDBLatestRow(LocalDbConn)
                 SqlEmployeeLatestRowRead.Read()
-                AddShownEmployeeInfoItems(SqlEmployeeLatestRowRead, ShowEmployeeInfo)
+                AddShownEmployeeInfoItems(SqlEmployeeLatestRowRead, ListView)
+                InitializePostEmployeeInput(Array)
             Catch ex As Exception
                 PublicFunction.ShowErrorMessageBox(ex.Message)
                 DbTransaction.Rollback()
@@ -166,17 +136,15 @@ Public Class EmployeeInfoForm
         End Try
     End Sub
 
-    Private Sub SearchButton_Click(sender As Object, e As EventArgs) Handles SearchButton.Click
-        Dim SearchNameTextStr As String = ReturnSearchNameTextStr()
+    Public Shared Sub SubSearchEmployee(ListView As ListView, SearchNameTextStr As String)
         Dim SqlSearchStr As String = $"SELECT * FROM dbo.EmployeeInfo WHERE EmployeeID LIKE '%{SearchNameTextStr}%' OR EmployeeName LIKE N'%{SearchNameTextStr}%';"
         Try
             LocalDbConn.Open()
             Dim SqlSearchtDb As New SqlCommand(SqlSearchStr, LocalDbConn)
             Dim SqlSearchRead = SqlSearchtDb.ExecuteReader()
-            ShowEmployeeInfo.Clear()
-            ShowEmployeeInfo.Columns.AddRange(New ColumnHeader() {EmployeeIDColumn, EmployeeNameColumn, GenderColumn, BelongingToColumn})
+            ListView.Items.Clear()
             While SqlSearchRead.Read()
-                AddShownEmployeeInfoItems(SqlSearchRead, ShowEmployeeInfo)
+                AddShownEmployeeInfoItems(SqlSearchRead, ListView)
             End While
             SqlSearchRead.Close()
         Catch ex As Exception
@@ -186,14 +154,52 @@ Public Class EmployeeInfoForm
         End Try
     End Sub
 
-    Private Sub ShowEmployeeInfo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ShowEmployeeInfo.SelectedIndexChanged
-        Dim SelectedItemShowEmployeeInfo As ListViewItem = ShowEmployeeInfo.SelectedItems(0)
+    Public Shared Sub SubSelectedIndexShowEmployeeInfo(ListView As ListView)
+        Dim SelectedItemShowEmployeeInfo As ListViewItem = ListView.SelectedItems(0)
         Dim ConstructorEmployeeDetail As New ConstructorEmployeeDetail()
         ConstructorEmployeeDetail.EmployeeID = SelectedItemShowEmployeeInfo.Text
         ConstructorEmployeeDetail.EmployeeName = SelectedItemShowEmployeeInfo.SubItems(1).Text
         ConstructorEmployeeDetail.EmployeeGender = SelectedItemShowEmployeeInfo.SubItems(2).Text
         ConstructorEmployeeDetail.EmployeeBelongingTo = SelectedItemShowEmployeeInfo.SubItems(3).Text
         SetConstructorEmployeeDetail = ConstructorEmployeeDetail
+    End Sub
+
+    ' form designer function
+    Private Sub ShownEmployeeInfoForm()
+        SubShowEmployeeInfo(ShowEmployeeInfo)
+        SubEmployeeIDAutofill(EmployeeIDAutofill)
+    End Sub
+
+    Private Sub PostEmployeeInfo_Click(sender As Object, e As EventArgs) Handles PostEmployeeInfo.Click
+        Dim InitializePostEmployeeInputArray() As Control = {EmployeeNameTextBox, Male, BelongingToSelectBox, EmployeeIDAutofill}
+
+        Dim EmployeeNameText As String = InitializePostEmployeeInputArray(0).Text
+        Dim BelongingToText As Integer = PublicFunction.ConvertBelongingToToFlag(InitializePostEmployeeInputArray(2).Text)
+        If Not CheckPostEmployeeInput(EmployeeNameText, BelongingToText) Then
+            Return
+        End If
+
+        Dim GenderTextString As String
+        If Male.Checked Then
+            GenderTextString = "男性"
+        ElseIf Female.Checked Then
+            GenderTextString = "女性"
+        Else
+            GenderTextString = "Error"
+        End If
+        Dim GenderText As Integer = ConvertGenderToFlag(GenderTextString)
+        Dim EmployeeIDText As Integer = EmployeeIDAutofill.Text
+        Dim SqlInsertStr As String = $"INSERT INTO dbo.EmployeeInfo(EmployeeID, EmployeeName, GenderFlag, BelongingToFlag) VALUES({EmployeeIDText}, N'{EmployeeNameText}', {GenderText}, {BelongingToText});"
+
+        SubPostEmployeeInfo(ShowEmployeeInfo, SqlInsertStr, InitializePostEmployeeInputArray)
+    End Sub
+
+    Private Sub SearchButton_Click(sender As Object, e As EventArgs) Handles SearchButton.Click
+        SubSearchEmployee(ShowEmployeeInfo, SearchName.Text)
+    End Sub
+
+    Private Sub ShowEmployeeInfo_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ShowEmployeeInfo.SelectedIndexChanged
+        SubSelectedIndexShowEmployeeInfo(ShowEmployeeInfo)
         EmployeeDetailFrom.Show()
     End Sub
 

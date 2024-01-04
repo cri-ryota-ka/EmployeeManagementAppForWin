@@ -2,6 +2,7 @@
 Imports PublicFunction = EmployeeManagementAppForWin.PublicFunction
 Imports PublicDbSetting = EmployeeManagementAppForWin.PublicDbSetting
 Imports EmployeeManagementAppForWin.ConstructorEmployeeDetail
+Imports EmployeeInfo = EmployeeManagementAppForWin.EmployeeInfoForm
 
 Public Class EmployeeDetailFrom
     Private Sub ShownEmployeeDetailFrom() Handles Me.Shown
@@ -17,19 +18,8 @@ Public Class EmployeeDetailFrom
         RemoveHandler Application.Idle, AddressOf ShownEmployeeDetailFrom_Idle
     End Sub
 
-    Private Sub UpdateEmployeeInfo_Click(sender As Object, e As EventArgs) Handles UpdateEmployeeInfo.Click
+    Public Shared Sub SubUpdateEmployeeInfo(EmployeeIDText As Integer, EmployeeNameText As String, BelongingToText As Integer)
         Dim LocalDbConn = PublicDbSetting.LocalDbConn
-        Dim EmployeeNameText As String = EmployeeNameTextBox.Text
-        If Not PublicFunction.CheckInputText(EmployeeNameText) Then
-            MessageBox.Show("従業員名を入力してください", "登録失敗")
-            Return
-        End If
-        Dim BelongingToText As Integer = PublicFunction.ConvertBelongingToToFlag(BelongingToSelectBox.Text)
-        If BelongingToText = -1 Then
-            MessageBox.Show("選択肢から所属を選んでください", "登録失敗")
-            Return
-        End If
-        Dim EmployeeIDText As Integer = EmployeeIDAutofill.Text
         Dim SqlUpdateStr As String = $"UPDATE dbo.EmployeeInfo SET EmployeeName = N'{EmployeeNameText}', BelongingToFlag = {BelongingToText} WHERE EmployeeID = {EmployeeIDText};"
         Try
             LocalDbConn.Open()
@@ -39,7 +29,8 @@ Public Class EmployeeDetailFrom
                 Dim SqlUpdateDb As New SqlCommand(SqlUpdateStr, LocalDbConn, DbTransaction)
                 SqlUpdateDb.ExecuteNonQuery()
                 DbTransaction.Commit()
-                MessageBox.Show("成功", "更新結果")
+                Dim UpdateSuccessText As String = "成功" & vbCrLf & "一覧には、開き直すと反映されます。"
+                MessageBox.Show(UpdateSuccessText, "更新結果")
             Catch ex As Exception
                 PublicFunction.ShowErrorMessageBox(ex.Message)
                 DbTransaction.Rollback()
@@ -49,6 +40,16 @@ Public Class EmployeeDetailFrom
         Finally
             PublicDbSetting.CloseDBConnection(LocalDbConn)
         End Try
+    End Sub
+
+    Private Sub UpdateEmployeeInfo_Click(sender As Object, e As EventArgs) Handles UpdateEmployeeInfo.Click
+        Dim EmployeeNameText As String = EmployeeNameTextBox.Text
+        Dim BelongingToText As Integer = PublicFunction.ConvertBelongingToToFlag(BelongingToSelectBox.Text)
+        Dim EmployeeIDText As Integer = EmployeeIDAutofill.Text
+        If Not EmployeeInfo.CheckPostEmployeeInput(EmployeeNameText, BelongingToText) Then
+            Return
+        End If
+        SubUpdateEmployeeInfo(EmployeeIDText, EmployeeNameText, BelongingToText)
     End Sub
 
     Private Sub ReturnEmployeeInfoButton_Click(sender As Object, e As EventArgs) Handles ReturnEmployeeInfoButton.Click

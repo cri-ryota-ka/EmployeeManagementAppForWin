@@ -37,7 +37,6 @@ Public Class PublicFunction
     Public Shared Function CheckInputText(ByVal InputText As String) As Boolean
         Dim CheckResult As Boolean
         Dim rgx As New Regex("\S+")
-        Debug.Write(rgx.IsMatch(InputText))
         If String.IsNullOrEmpty(InputText) Or Not rgx.IsMatch(InputText) Then
             CheckResult = False
         Else
