@@ -22,6 +22,7 @@ Partial Class NisWindowForm
     'コード エディターを使って変更しないでください。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        CostInfoCreatedAtColumn = New ColumnHeader()
         SplitContainer = New SplitContainer()
         SearchEmployeeTextBox = New TextBox()
         SearchEmployee = New Button()
@@ -51,8 +52,18 @@ Partial Class NisWindowForm
         Label3 = New Label()
         Label5 = New Label()
         CostInfoTab = New TabPage()
+        ShowCostInfo = New ListView()
+        ColumnHeader1 = New ColumnHeader()
+        ColumnHeader2 = New ColumnHeader()
+        ColumnHeader3 = New ColumnHeader()
+        ColumnHeader4 = New ColumnHeader()
+        ColumnHeader5 = New ColumnHeader()
+        ColumnHeader6 = New ColumnHeader()
+        ColumnHeader7 = New ColumnHeader()
+        AnnotationDeleteCostInfo = New Label()
+        ChangeDisplayCostTab = New Button()
         CloseCostInfoTab = New Button()
-        PostEmployeeInfoFormTab = New TabPage()
+        PostEmployeeInfoTab = New TabPage()
         DummyButtonCloseEmployeeInfoTab = New Button()
         DummyButtonPostEmployeeInfo = New Button()
         PostEmployeeInfoPanel = New Panel()
@@ -66,6 +77,27 @@ Partial Class NisWindowForm
         BelongingTo = New Label()
         Gender = New Label()
         EmployeeName = New Label()
+        PostCostInfoTab = New TabPage()
+        DummyCloseCostInfoTab = New Button()
+        DummyChangeDisplayCostTab = New Button()
+        PostCostInfoPanel = New Panel()
+        PaymentCost = New TextBox()
+        CostContent = New TextBox()
+        CostDay = New ComboBox()
+        CostMonth = New ComboBox()
+        CostYear = New ComboBox()
+        Label10 = New Label()
+        Label9 = New Label()
+        CostEmpoyeeId = New ComboBox()
+        PaymentName = New TextBox()
+        AdvancePaymentOff = New RadioButton()
+        AdvancePaymentOn = New RadioButton()
+        Label1 = New Label()
+        PostCostInfo = New Button()
+        Label4 = New Label()
+        Label6 = New Label()
+        Label7 = New Label()
+        Label8 = New Label()
         CType(SplitContainer, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer.Panel1.SuspendLayout()
         SplitContainer.Panel2.SuspendLayout()
@@ -75,9 +107,16 @@ Partial Class NisWindowForm
         EmployeeDetailTab.SuspendLayout()
         EmployeeDetailPanel.SuspendLayout()
         CostInfoTab.SuspendLayout()
-        PostEmployeeInfoFormTab.SuspendLayout()
+        PostEmployeeInfoTab.SuspendLayout()
         PostEmployeeInfoPanel.SuspendLayout()
+        PostCostInfoTab.SuspendLayout()
+        PostCostInfoPanel.SuspendLayout()
         SuspendLayout()
+        ' 
+        ' CostInfoCreatedAtColumn
+        ' 
+        CostInfoCreatedAtColumn.Text = "CreatedAt"
+        CostInfoCreatedAtColumn.Width = 0
         ' 
         ' SplitContainer
         ' 
@@ -170,7 +209,8 @@ Partial Class NisWindowForm
         MenuTabs.Controls.Add(EmployeeInfoTab)
         MenuTabs.Controls.Add(EmployeeDetailTab)
         MenuTabs.Controls.Add(CostInfoTab)
-        MenuTabs.Controls.Add(PostEmployeeInfoFormTab)
+        MenuTabs.Controls.Add(PostEmployeeInfoTab)
+        MenuTabs.Controls.Add(PostCostInfoTab)
         MenuTabs.Location = New Point(3, 31)
         MenuTabs.Name = "MenuTabs"
         MenuTabs.SelectedIndex = 0
@@ -197,7 +237,7 @@ Partial Class NisWindowForm
         ShowEmployeeInfo.FullRowSelect = True
         ShowEmployeeInfo.Location = New Point(6, 35)
         ShowEmployeeInfo.Name = "ShowEmployeeInfo"
-        ShowEmployeeInfo.Size = New Size(364, 353)
+        ShowEmployeeInfo.Size = New Size(314, 353)
         ShowEmployeeInfo.TabIndex = 12
         ShowEmployeeInfo.UseCompatibleStateImageBehavior = False
         ShowEmployeeInfo.View = View.Details
@@ -210,7 +250,7 @@ Partial Class NisWindowForm
         ' EmployeeNameColumn
         ' 
         EmployeeNameColumn.Text = "氏名"
-        EmployeeNameColumn.Width = 150
+        EmployeeNameColumn.Width = 100
         ' 
         ' GenderColumn
         ' 
@@ -351,6 +391,9 @@ Partial Class NisWindowForm
         ' 
         ' CostInfoTab
         ' 
+        CostInfoTab.Controls.Add(ShowCostInfo)
+        CostInfoTab.Controls.Add(AnnotationDeleteCostInfo)
+        CostInfoTab.Controls.Add(ChangeDisplayCostTab)
         CostInfoTab.Controls.Add(CloseCostInfoTab)
         CostInfoTab.Location = New Point(4, 24)
         CostInfoTab.Name = "CostInfoTab"
@@ -358,6 +401,71 @@ Partial Class NisWindowForm
         CostInfoTab.TabIndex = 2
         CostInfoTab.Text = "交通費"
         CostInfoTab.UseVisualStyleBackColor = True
+        ' 
+        ' ShowCostInfo
+        ' 
+        ShowCostInfo.Activation = ItemActivation.OneClick
+        ShowCostInfo.Columns.AddRange(New ColumnHeader() {ColumnHeader1, ColumnHeader2, ColumnHeader3, ColumnHeader4, ColumnHeader5, ColumnHeader6, ColumnHeader7, CostInfoCreatedAtColumn})
+        ShowCostInfo.FullRowSelect = True
+        ShowCostInfo.Location = New Point(6, 35)
+        ShowCostInfo.Name = "ShowCostInfo"
+        ShowCostInfo.Size = New Size(620, 353)
+        ShowCostInfo.TabIndex = 14
+        ShowCostInfo.UseCompatibleStateImageBehavior = False
+        ShowCostInfo.View = View.Details
+        ' 
+        ' ColumnHeader1
+        ' 
+        ColumnHeader1.Text = "従業員ID"
+        ColumnHeader1.Width = 75
+        ' 
+        ' ColumnHeader2
+        ' 
+        ColumnHeader2.Text = "氏名"
+        ColumnHeader2.Width = 100
+        ' 
+        ' ColumnHeader3
+        ' 
+        ColumnHeader3.Text = "支払日"
+        ColumnHeader3.Width = 75
+        ' 
+        ' ColumnHeader4
+        ' 
+        ColumnHeader4.Text = "支払先"
+        ColumnHeader4.Width = 150
+        ' 
+        ' ColumnHeader5
+        ' 
+        ColumnHeader5.Text = "内容"
+        ColumnHeader5.Width = 150
+        ' 
+        ' ColumnHeader6
+        ' 
+        ColumnHeader6.Text = "立替"
+        ColumnHeader6.Width = 50
+        ' 
+        ' ColumnHeader7
+        ' 
+        ColumnHeader7.Text = "金額"
+        ColumnHeader7.Width = 75
+        ' 
+        ' AnnotationDeleteCostInfo
+        ' 
+        AnnotationDeleteCostInfo.AutoSize = True
+        AnnotationDeleteCostInfo.Location = New Point(87, 10)
+        AnnotationDeleteCostInfo.Name = "AnnotationDeleteCostInfo"
+        AnnotationDeleteCostInfo.Size = New Size(216, 15)
+        AnnotationDeleteCostInfo.TabIndex = 13
+        AnnotationDeleteCostInfo.Text = "※削除する場合は交通費を選択してください"
+        ' 
+        ' ChangeDisplayCostTab
+        ' 
+        ChangeDisplayCostTab.Location = New Point(6, 6)
+        ChangeDisplayCostTab.Name = "ChangeDisplayCostTab"
+        ChangeDisplayCostTab.Size = New Size(75, 23)
+        ChangeDisplayCostTab.TabIndex = 12
+        ChangeDisplayCostTab.Text = "登録"
+        ChangeDisplayCostTab.UseVisualStyleBackColor = True
         ' 
         ' CloseCostInfoTab
         ' 
@@ -368,18 +476,18 @@ Partial Class NisWindowForm
         CloseCostInfoTab.Text = "閉じる"
         CloseCostInfoTab.UseVisualStyleBackColor = True
         ' 
-        ' PostEmployeeInfoFormTab
+        ' PostEmployeeInfoTab
         ' 
-        PostEmployeeInfoFormTab.Controls.Add(DummyButtonCloseEmployeeInfoTab)
-        PostEmployeeInfoFormTab.Controls.Add(DummyButtonPostEmployeeInfo)
-        PostEmployeeInfoFormTab.Controls.Add(PostEmployeeInfoPanel)
-        PostEmployeeInfoFormTab.Location = New Point(4, 24)
-        PostEmployeeInfoFormTab.Name = "PostEmployeeInfoFormTab"
-        PostEmployeeInfoFormTab.Padding = New Padding(3)
-        PostEmployeeInfoFormTab.Size = New Size(632, 388)
-        PostEmployeeInfoFormTab.TabIndex = 3
-        PostEmployeeInfoFormTab.Text = "従業員追加"
-        PostEmployeeInfoFormTab.UseVisualStyleBackColor = True
+        PostEmployeeInfoTab.Controls.Add(DummyButtonCloseEmployeeInfoTab)
+        PostEmployeeInfoTab.Controls.Add(DummyButtonPostEmployeeInfo)
+        PostEmployeeInfoTab.Controls.Add(PostEmployeeInfoPanel)
+        PostEmployeeInfoTab.Location = New Point(4, 24)
+        PostEmployeeInfoTab.Name = "PostEmployeeInfoTab"
+        PostEmployeeInfoTab.Padding = New Padding(3)
+        PostEmployeeInfoTab.Size = New Size(632, 388)
+        PostEmployeeInfoTab.TabIndex = 3
+        PostEmployeeInfoTab.Text = "従業員登録"
+        PostEmployeeInfoTab.UseVisualStyleBackColor = True
         ' 
         ' DummyButtonCloseEmployeeInfoTab
         ' 
@@ -512,6 +620,218 @@ Partial Class NisWindowForm
         EmployeeName.TabIndex = 16
         EmployeeName.Text = "氏名："
         ' 
+        ' PostCostInfoTab
+        ' 
+        PostCostInfoTab.Controls.Add(DummyCloseCostInfoTab)
+        PostCostInfoTab.Controls.Add(DummyChangeDisplayCostTab)
+        PostCostInfoTab.Controls.Add(PostCostInfoPanel)
+        PostCostInfoTab.Location = New Point(4, 24)
+        PostCostInfoTab.Name = "PostCostInfoTab"
+        PostCostInfoTab.Size = New Size(632, 388)
+        PostCostInfoTab.TabIndex = 4
+        PostCostInfoTab.Text = "交通費登録"
+        PostCostInfoTab.UseVisualStyleBackColor = True
+        ' 
+        ' DummyCloseCostInfoTab
+        ' 
+        DummyCloseCostInfoTab.Location = New Point(551, 6)
+        DummyCloseCostInfoTab.Name = "DummyCloseCostInfoTab"
+        DummyCloseCostInfoTab.Size = New Size(75, 23)
+        DummyCloseCostInfoTab.TabIndex = 14
+        DummyCloseCostInfoTab.Text = "閉じる"
+        DummyCloseCostInfoTab.UseVisualStyleBackColor = True
+        ' 
+        ' DummyChangeDisplayCostTab
+        ' 
+        DummyChangeDisplayCostTab.Location = New Point(6, 6)
+        DummyChangeDisplayCostTab.Name = "DummyChangeDisplayCostTab"
+        DummyChangeDisplayCostTab.Size = New Size(75, 23)
+        DummyChangeDisplayCostTab.TabIndex = 13
+        DummyChangeDisplayCostTab.Text = "一覧に戻る"
+        DummyChangeDisplayCostTab.UseVisualStyleBackColor = True
+        ' 
+        ' PostCostInfoPanel
+        ' 
+        PostCostInfoPanel.Controls.Add(PaymentCost)
+        PostCostInfoPanel.Controls.Add(CostContent)
+        PostCostInfoPanel.Controls.Add(CostDay)
+        PostCostInfoPanel.Controls.Add(CostMonth)
+        PostCostInfoPanel.Controls.Add(CostYear)
+        PostCostInfoPanel.Controls.Add(Label10)
+        PostCostInfoPanel.Controls.Add(Label9)
+        PostCostInfoPanel.Controls.Add(CostEmpoyeeId)
+        PostCostInfoPanel.Controls.Add(PaymentName)
+        PostCostInfoPanel.Controls.Add(AdvancePaymentOff)
+        PostCostInfoPanel.Controls.Add(AdvancePaymentOn)
+        PostCostInfoPanel.Controls.Add(Label1)
+        PostCostInfoPanel.Controls.Add(PostCostInfo)
+        PostCostInfoPanel.Controls.Add(Label4)
+        PostCostInfoPanel.Controls.Add(Label6)
+        PostCostInfoPanel.Controls.Add(Label7)
+        PostCostInfoPanel.Controls.Add(Label8)
+        PostCostInfoPanel.Location = New Point(0, 0)
+        PostCostInfoPanel.Name = "PostCostInfoPanel"
+        PostCostInfoPanel.Size = New Size(632, 388)
+        PostCostInfoPanel.TabIndex = 15
+        ' 
+        ' PaymentCost
+        ' 
+        PaymentCost.Location = New Point(82, 232)
+        PaymentCost.Name = "PaymentCost"
+        PaymentCost.PlaceholderText = "数字のみ入力してください"
+        PaymentCost.Size = New Size(150, 23)
+        PaymentCost.TabIndex = 42
+        ' 
+        ' CostContent
+        ' 
+        CostContent.Location = New Point(82, 154)
+        CostContent.Name = "CostContent"
+        CostContent.PlaceholderText = "空欄 可"
+        CostContent.Size = New Size(150, 23)
+        CostContent.TabIndex = 41
+        ' 
+        ' CostDay
+        ' 
+        CostDay.FormattingEnabled = True
+        CostDay.Items.AddRange(New Object() {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"})
+        CostDay.Location = New Point(182, 76)
+        CostDay.Name = "CostDay"
+        CostDay.Size = New Size(36, 23)
+        CostDay.TabIndex = 40
+        CostDay.Text = "1"
+        ' 
+        ' CostMonth
+        ' 
+        CostMonth.FormattingEnabled = True
+        CostMonth.Items.AddRange(New Object() {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"})
+        CostMonth.Location = New Point(140, 76)
+        CostMonth.Name = "CostMonth"
+        CostMonth.Size = New Size(36, 23)
+        CostMonth.TabIndex = 39
+        CostMonth.Text = "1"
+        ' 
+        ' CostYear
+        ' 
+        CostYear.FormattingEnabled = True
+        CostYear.Items.AddRange(New Object() {"2023", "2024", "2025", "2026"})
+        CostYear.Location = New Point(82, 76)
+        CostYear.Name = "CostYear"
+        CostYear.Size = New Size(52, 23)
+        CostYear.TabIndex = 38
+        CostYear.Text = "2024"
+        ' 
+        ' Label10
+        ' 
+        Label10.AutoSize = True
+        Label10.Location = New Point(10, 235)
+        Label10.Name = "Label10"
+        Label10.Size = New Size(43, 15)
+        Label10.TabIndex = 37
+        Label10.Text = "金額："
+        ' 
+        ' Label9
+        ' 
+        Label9.AutoSize = True
+        Label9.Location = New Point(10, 196)
+        Label9.Name = "Label9"
+        Label9.Size = New Size(43, 15)
+        Label9.TabIndex = 36
+        Label9.Text = "立替："
+        ' 
+        ' CostEmpoyeeId
+        ' 
+        CostEmpoyeeId.BackColor = SystemColors.Window
+        CostEmpoyeeId.FormattingEnabled = True
+        CostEmpoyeeId.Location = New Point(82, 37)
+        CostEmpoyeeId.Name = "CostEmpoyeeId"
+        CostEmpoyeeId.Size = New Size(150, 23)
+        CostEmpoyeeId.TabIndex = 35
+        CostEmpoyeeId.Text = "9999 ダミー"
+        ' 
+        ' PaymentName
+        ' 
+        PaymentName.Location = New Point(82, 115)
+        PaymentName.Name = "PaymentName"
+        PaymentName.PlaceholderText = "入力してください"
+        PaymentName.Size = New Size(150, 23)
+        PaymentName.TabIndex = 34
+        ' 
+        ' AdvancePaymentOff
+        ' 
+        AdvancePaymentOff.AutoSize = True
+        AdvancePaymentOff.Location = New Point(151, 194)
+        AdvancePaymentOff.Name = "AdvancePaymentOff"
+        AdvancePaymentOff.Size = New Size(62, 19)
+        AdvancePaymentOff.TabIndex = 33
+        AdvancePaymentOff.TabStop = True
+        AdvancePaymentOff.Text = "× (なし)"
+        AdvancePaymentOff.UseVisualStyleBackColor = True
+        ' 
+        ' AdvancePaymentOn
+        ' 
+        AdvancePaymentOn.AutoSize = True
+        AdvancePaymentOn.Checked = True
+        AdvancePaymentOn.Location = New Point(82, 194)
+        AdvancePaymentOn.Name = "AdvancePaymentOn"
+        AdvancePaymentOn.Size = New Size(66, 19)
+        AdvancePaymentOn.TabIndex = 32
+        AdvancePaymentOn.TabStop = True
+        AdvancePaymentOn.Text = "○ (あり)"
+        AdvancePaymentOn.UseVisualStyleBackColor = True
+        ' 
+        ' Label1
+        ' 
+        Label1.AutoSize = True
+        Label1.Location = New Point(279, 223)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(0, 15)
+        Label1.TabIndex = 31
+        ' 
+        ' PostCostInfo
+        ' 
+        PostCostInfo.Location = New Point(6, 274)
+        PostCostInfo.Name = "PostCostInfo"
+        PostCostInfo.Size = New Size(75, 23)
+        PostCostInfo.TabIndex = 30
+        PostCostInfo.Text = "登録"
+        PostCostInfo.UseVisualStyleBackColor = True
+        ' 
+        ' Label4
+        ' 
+        Label4.AutoSize = True
+        Label4.Location = New Point(10, 157)
+        Label4.Name = "Label4"
+        Label4.Size = New Size(43, 15)
+        Label4.TabIndex = 29
+        Label4.Text = "内容："
+        ' 
+        ' Label6
+        ' 
+        Label6.AutoSize = True
+        Label6.Location = New Point(10, 118)
+        Label6.Name = "Label6"
+        Label6.Size = New Size(55, 15)
+        Label6.TabIndex = 28
+        Label6.Text = "支払先："
+        ' 
+        ' Label7
+        ' 
+        Label7.AutoSize = True
+        Label7.Location = New Point(10, 79)
+        Label7.Name = "Label7"
+        Label7.Size = New Size(55, 15)
+        Label7.TabIndex = 27
+        Label7.Text = "支払日："
+        ' 
+        ' Label8
+        ' 
+        Label8.AutoSize = True
+        Label8.Location = New Point(10, 40)
+        Label8.Name = "Label8"
+        Label8.Size = New Size(55, 15)
+        Label8.TabIndex = 26
+        Label8.Text = "従業員："
+        ' 
         ' NisWindowForm
         ' 
         AutoScaleDimensions = New SizeF(7.0F, 15.0F)
@@ -531,9 +851,13 @@ Partial Class NisWindowForm
         EmployeeDetailPanel.ResumeLayout(False)
         EmployeeDetailPanel.PerformLayout()
         CostInfoTab.ResumeLayout(False)
-        PostEmployeeInfoFormTab.ResumeLayout(False)
+        CostInfoTab.PerformLayout()
+        PostEmployeeInfoTab.ResumeLayout(False)
         PostEmployeeInfoPanel.ResumeLayout(False)
         PostEmployeeInfoPanel.PerformLayout()
+        PostCostInfoTab.ResumeLayout(False)
+        PostCostInfoPanel.ResumeLayout(False)
+        PostCostInfoPanel.PerformLayout()
         ResumeLayout(False)
     End Sub
 
@@ -558,7 +882,7 @@ Partial Class NisWindowForm
     Friend WithEvents EmployeeNameColumn As ColumnHeader
     Friend WithEvents GenderColumn As ColumnHeader
     Friend WithEvents BelongingToColumn As ColumnHeader
-    Friend WithEvents PostEmployeeInfoFormTab As TabPage
+    Friend WithEvents PostEmployeeInfoTab As TabPage
     Friend WithEvents DummyButtonCloseEmployeeInfoTab As Button
     Friend WithEvents DummyButtonPostEmployeeInfo As Button
     Friend WithEvents DummyButtonShowEmployeeDetail As Button
@@ -581,4 +905,36 @@ Partial Class NisWindowForm
     Friend WithEvents Label2 As Label
     Friend WithEvents Label3 As Label
     Friend WithEvents Label5 As Label
+    Friend WithEvents ChangeDisplayCostTab As Button
+    Friend WithEvents PostCostInfoTab As TabPage
+    Friend WithEvents DummyCloseCostInfoTab As Button
+    Friend WithEvents DummyChangeDisplayCostTab As Button
+    Friend WithEvents AnnotationDeleteCostInfo As Label
+    Friend WithEvents PostCostInfoPanel As Panel
+    Friend WithEvents CostEmpoyeeId As ComboBox
+    Friend WithEvents PaymentName As TextBox
+    Friend WithEvents Label1 As Label
+    Friend WithEvents PostCostInfo As Button
+    Friend WithEvents Label4 As Label
+    Friend WithEvents Label6 As Label
+    Friend WithEvents Label7 As Label
+    Friend WithEvents Label8 As Label
+    Friend WithEvents Label9 As Label
+    Friend WithEvents Label10 As Label
+    Friend WithEvents CostYear As ComboBox
+    Friend WithEvents CostMonth As ComboBox
+    Friend WithEvents CostDay As ComboBox
+    Friend WithEvents PaymentCost As TextBox
+    Friend WithEvents CostContent As TextBox
+    Friend WithEvents AdvancePaymentOff As RadioButton
+    Friend WithEvents AdvancePaymentOn As RadioButton
+    Friend WithEvents ShowCostInfo As ListView
+    Friend WithEvents ColumnHeader1 As ColumnHeader
+    Friend WithEvents ColumnHeader2 As ColumnHeader
+    Friend WithEvents ColumnHeader3 As ColumnHeader
+    Friend WithEvents ColumnHeader4 As ColumnHeader
+    Friend WithEvents ColumnHeader5 As ColumnHeader
+    Friend WithEvents ColumnHeader6 As ColumnHeader
+    Friend WithEvents ColumnHeader7 As ColumnHeader
+    Friend WithEvents CostInfoCreatedAtColumn As ColumnHeader
 End Class

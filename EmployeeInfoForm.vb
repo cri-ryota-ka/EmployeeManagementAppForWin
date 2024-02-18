@@ -65,18 +65,17 @@ Public Class EmployeeInfoForm
     ' db connection and sqlstrings
     Public Shared LocalDbConn = PublicDbSetting.LocalDbConn
 
-    Public Shared Sub AddShownEmployeeInfoItems(ByVal SqlReadObject As Object, ListView As ListView)
+    Public Shared Sub AddShownEmployeeInfoItems(SqlReadObject As SqlDataReader, ListView As ListView)
         ListView.Items.AddRange(New ListViewItem() {
             New ListViewItem(New String() {$"{SqlReadObject(0)}",
-                                            $"{SqlReadObject(1)}",
-                                            $"{ConvertFlagToGender(SqlReadObject(2))}",
-                                            $"{ConvertFlagToBelongingTo(SqlReadObject(3))}"}, -1)
+                                           $"{SqlReadObject(1)}",
+                                           $"{ConvertFlagToGender(SqlReadObject(2))}",
+                                           $"{ConvertFlagToBelongingTo(SqlReadObject(3))}"}, -1)
             }
         )
     End Sub
-    Public Shared Function ReturnDBLatestRow(LocalDbConn)
-        Dim SqlDBLatestRowStr As String = "SELECT TOP(1)* FROM dbo.EmployeeInfo ORDER BY EmployeeID DESC;"
-        Dim SqlDBLatestRowDB As New SqlCommand(SqlDBLatestRowStr, LocalDbConn)
+    Public Shared Function ReturnDBLatestRow(LocalDbConn As SqlConnection, SqlStr As String) As SqlDataReader
+        Dim SqlDBLatestRowDB As New SqlCommand(SqlStr, LocalDbConn)
         Dim SqlDBLatestRowRead = SqlDBLatestRowDB.ExecuteReader()
         Return SqlDBLatestRowRead
     End Function
@@ -101,7 +100,8 @@ Public Class EmployeeInfoForm
     Public Shared Sub SubEmployeeIDAutofill(Label As Label)
         Try
             LocalDbConn.Open()
-            Dim SqlEmployeeIDAutofillRead = ReturnDBLatestRow(LocalDbConn)
+            Dim SqlStr As String = $"SELECT TOP(1)* FROM dbo.EmployeeInfo ORDER BY EmployeeID DESC;"
+            Dim SqlEmployeeIDAutofillRead = ReturnDBLatestRow(LocalDbConn, SqlStr)
             SqlEmployeeIDAutofillRead.Read()
             Label.Text = SqlEmployeeIDAutofillRead(0) + 1
             SqlEmployeeIDAutofillRead.Close()
@@ -121,7 +121,8 @@ Public Class EmployeeInfoForm
                 Dim SqlInsertDb As New SqlCommand(SqlInsertStr, LocalDbConn, DbTransaction)
                 SqlInsertDb.ExecuteNonQuery()
                 DbTransaction.Commit()
-                Dim SqlEmployeeLatestRowRead = ReturnDBLatestRow(LocalDbConn)
+                Dim SqlReadStr As String = $"SELECT TOP(1)* FROM dbo.EmployeeInfo ORDER BY EmployeeID DESC;"
+                Dim SqlEmployeeLatestRowRead = ReturnDBLatestRow(LocalDbConn, SqlReadStr)
                 SqlEmployeeLatestRowRead.Read()
                 AddShownEmployeeInfoItems(SqlEmployeeLatestRowRead, ListView)
                 InitializePostEmployeeInput(Array)
